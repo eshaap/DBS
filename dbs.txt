@@ -5,7 +5,6 @@ CREATE TABLE Department (DeptID INT PRIMARY KEY, DeptName VARCHAR(100) NOT NULL,
 
 
 
-
 -- Employee Table
 
 
@@ -16,7 +15,6 @@ CREATE TABLE Employee (EmployeeID INT PRIMARY KEY, Name VARCHAR(100) NOT NULL, E
 
 
 CREATE TABLE Project (ProjectID INT PRIMARY KEY,  ProjectName VARCHAR(100) NOT NULL, StartDate DATE, EndDate DATE, Budget DECIMAL(15, 2), DeptID INT, FOREIGN KEY (DeptID) REFERENCES Department(DeptID));
-
 
 
 
@@ -33,9 +31,6 @@ CREATE TABLE Salary (SalaryID INT PRIMARY KEY, EmployeeID INT, Amount DECIMAL(12
 
 
 
-
-
-
 -- Leave Table
 
 
@@ -43,63 +38,27 @@ CREATE TABLE LeaveRecord (LeaveID INT PRIMARY KEY, EmployeeID INT, StartDate DAT
 
 
 
-
-
-
-
-
-
-
-
-
 Alter:
 
-
-
-
 ALTER TABLE Employee ADD Gender ENUM('Male', 'Female', 'Other') AFTER Name; 
-
-
 
 
 ALTER TABLE Employee MODIFY Phone BIGINT;
 
 
-
-
 ALTER TABLE Department DROP COLUMN Location;
-
-
-
-
 
 
 ALTER TABLE Assignment ADD CONSTRAINT fk_assignment_employee FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID);
 
 
-
-
-
-
 ALTER TABLE Salary CHANGE Amount SalaryAmount DECIMAL(12,2);
-
-
-
-
 
 
 RENAME TABLE LeaveRecord TO EmployeeLeave;
 
 
-
-
-
-
 ALTER TABLE Assignment ADD CONSTRAINT chk_hours_worked_positive CHECK (HoursWorked >= 0);
-
-
-
-
 
 
 -- Once you know the name (e.g., fk_project_department), run:
@@ -110,30 +69,7 @@ ALTER TABLE Project DROP FOREIGN KEY project_ibfk_1;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 INSERT Queries:
-
 
 
 
@@ -169,7 +105,6 @@ INSERT INTO Project (ProjectID, ProjectName, StartDate, EndDate, Budget, DeptID)
 
 
 
-
 INSERT INTO Assignment (AssignmentID, EmployeeID, ProjectID, Role, HoursWorked)
 VALUES
 (1, 101, 1001, 'Developer', 150.5),
@@ -178,8 +113,6 @@ VALUES
 (4, 104, 1003, 'SEO Specialist', 90.0),
 (5, 105, 1004, 'Audit Lead', 120.0),
 (6, 106, 1004, 'Data Entry', 75.5);
-
-
 
 
 
@@ -196,16 +129,12 @@ VALUES
 
 
 
-
-
 INSERT INTO EmployeeLeave (LeaveID, EmployeeID, StartDate, EndDate, LeaveType, Status) VALUES
 (1, 101, '2024-06-01', '2024-06-05', 'Sick', 'Pending'),
 (2, 103, '2024-05-20', '2024-05-25', 'Casual', 'Approved'),
 (3, 104, '2024-07-10', '2024-07-12', 'Casual', 'Approved'),
 (4, 105, '2024-08-01', '2024-08-15', 'Maternity', 'Pending'),
 (5, 106, '2024-06-15', '2024-06-17', 'Sick', 'Approved');
-
-
 
 
 
@@ -217,9 +146,7 @@ UPDATE Employee SET Email = 'riya.new@company.com', Phone = '9988776655' WHERE E
 
 
 
-
 UPDATE Department SET DeptName = 'Product Engineering' WHERE DeptID = 1;
-
 
 
 
@@ -227,9 +154,7 @@ UPDATE Project SET Budget = 550000.00, EndDate = '2025-06-30' WHERE ProjectID = 
 
 
 
-
 UPDATE Assignment SET Role = 'Senior Developer', HoursWorked = 180.0 WHERE AssignmentID = 1;
-
 
 
 
@@ -237,10 +162,29 @@ UPDATE Salary SET SalaryAmount = 65000.00, PayGrade = 'PG4+' WHERE SalaryID = 1;
 
 
 
-
 UPDATE EmployeeLeave SET Status = 'Approved' WHERE LeaveID = 1;
 
 
-
-
 UPDATE Employee SET ManagerID = 101 where DeptID = 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://www.notion.so/DBS-Assignment-217c71e0b10480a0836ad932acda4bdb
