@@ -1,0 +1,72 @@
+#10. A smart education platform wants a single AI system that supports learning. Build an application that:
+# 1. Generates educational text content
+# 2. Generates an image caption from uploaded image
+# 3. Converts text to audio
+# 4. Summarizes user-provided content
+
+!pip install transformers torch pillow gtts -q
+
+from transformers import pipeline, BlipProcessor, BlipForConditionalGeneration
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from gtts import gTTS
+from PIL import Image
+from google.colab import files
+from IPython.display import Audio, display
+
+# ------------------------------------------------
+# 1. Generate educational text content
+# ------------------------------------------------
+generator = pipeline("text-generation", model="gpt2")
+
+edu_text = generator("Explain machine learning in simple terms for students:",max_new_tokens=100,temperature=0.9)[0]["generated_text"]
+
+print("------ Educational Text ------\n")
+print(edu_text)
+
+# ------------------------------------------------
+# 2. Upload image and generate caption
+# ------------------------------------------------
+img = files.upload()
+image_path = list(img.keys())[0]
+image = Image.open(image_path).convert("RGB")
+
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+caption_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+inputs = processor(image, text="Describe this educational image:", return_tensors="pt")
+output = caption_model.generate(**inputs)
+caption = processor.decode(output[0], skip_special_tokens=True)
+
+print("\n------ Image Caption ------\n")
+print(caption)
+
+# ------------------------------------------------
+# 3. Convert generated text to audio
+# ------------------------------------------------
+tts = gTTS(text=edu_text, lang="en")
+tts.save("education_audio.mp3")
+
+print("\n------ Audio Output ------")
+display(Audio("education_audio.mp3"))
+
+# ------------------------------------------------
+# 4. Summarize user-provided content
+# ------------------------------------------------
+user_text = """
+Machine learning is a subset of artificial intelligence that allows systems
+to learn from data and improve performance over time. It is widely used in
+education, healthcare, and business applications.
+"""
+
+model_name = "facebook/bart-large-cnn"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+inputs = tokenizer.encode(user_text, return_tensors="pt", max_length=1024,truncation=True)
+
+summary_ids = model.generate(inputs,max_length=40,min_length=15,do_sample=False)
+
+summary_text = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+
+print("\n------ Summary ------\n")
+print(summary_text)
