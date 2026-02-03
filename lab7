@@ -1,0 +1,34 @@
+#7. An e-learning startup wants AI-generated multimedia content.
+#1. Take educational text from the user and convert it to speech using gTTS
+#2. Upload an image and create a simple video using that image
+
+# Install required libraries (run once in Colab)
+!pip install gtts moviepy pillow -q
+
+from gtts import gTTS
+from IPython.display import Audio, Video, display
+from google.colab import files
+from moviepy.editor import ImageClip
+
+# ------------------------------------------------
+# 1. Text to Speech
+# ------------------------------------------------
+text = input("Enter educational text: ")
+
+tts = gTTS(text=text, lang='en')
+tts.save("education_audio.mp3")
+
+print("Generated audio:")
+display(Audio("education_audio.mp3"))
+
+# ------------------------------------------------
+# 2. Image to Video
+
+img = files.upload()
+image_path = list(img.keys())[0]
+
+video = ImageClip(image_path).set_duration(5)
+video.write_videofile("education_video.mp4", fps=24)
+
+print("Generated video:")
+display(Video("education_video.mp4", embed=True))
