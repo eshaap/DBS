@@ -1,0 +1,27 @@
+#12.A college wants to automatically classify student feedback as Positive or Negative using an LLM.
+
+from transformers import pipeline
+
+# Load sentiment analysis model (LLM-based)
+classifier = pipeline("sentiment-analysis")
+
+# Function to classify feedback
+def classify_feedback(feedback):
+    result = classifier(feedback)[0]
+    label = result["label"]
+
+    if label == "POSITIVE":
+        return "Positive"
+    else:
+        return "Negative"
+
+# Example feedbacks
+feedbacks = [
+    "The teacher explains concepts very clearly.",
+    "The classes are boring and difficult to understand."
+]
+
+# Classify feedbacks
+for fb in feedbacks:
+    print(f"Feedback: {fb}")
+    print(f"Sentiment: {classify_feedback(fb)}\n")
