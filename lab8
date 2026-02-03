@@ -1,0 +1,57 @@
+#8. A training institute wants to analyze student feedback automatically. Build a system that:
+# 1. Generates a motivational story for learners
+# 2. Performs sentiment analysis on student feedback
+# 3. Summarizes the feedback text
+
+!pip install transformers torch -q
+
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
+
+generator = pipeline("text-generation", model="gpt2")
+
+story_prompt = (
+    " a motivational story for students about overcoming challenges "
+    "and achieving success in studies.\nStory:"
+)
+
+story_output = generator(story_prompt,max_new_tokens=150,temperature=0.9)[0]["generated_text"]
+
+
+print("------ Motivational Story ------\n")
+print(story_output)
+
+
+# ------------------------------------------------
+# 2. Student feedback and sentiment analysis
+# ------------------------------------------------
+feedback = """
+The story was inspiring and motivated me to stay focused on my goals.
+It helped me believe that hard work and consistency lead to success.
+However, the story could have been more concise.
+"""
+
+sentiment_analyzer = pipeline("sentiment-analysis")
+sentiment_result = sentiment_analyzer(feedback)
+
+print("\n------ Sentiment Analysis ------\n")
+print(sentiment_result)
+
+
+# ------------------------------------------------
+# 3. Summarize the feedback text (YOUR METHOD)
+# ------------------------------------------------
+model_name = "facebook/bart-large-cnn"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+# Encode the feedback text
+inputs = tokenizer.encode(feedback,return_tensors="pt",max_length=1024,truncation=True)
+
+# Generate summary
+summary_ids = model.generate(inputs,max_length=40,min_length=15,do_sample=False)
+
+# Decode summary
+summary_text = tokenizer.decode(summary_ids[0],skip_special_tokens=True)
+
+print("\n------ Feedback Summary ------\n")
+print(summary_text)
