@@ -1,0 +1,37 @@
+#6. A digital library system wants AI to understand and generate images.
+#1. Upload an image and generate a caption using an image captioning model
+#2. Take a text prompt and generate an image using a text-to-image model
+
+# Install required libraries (run once in Colab)
+!pip install transformers torch diffusers accelerate pillow -q
+
+from transformers import BlipProcessor, BlipForConditionalGeneration
+from diffusers import StableDiffusionPipeline
+from PIL import Image
+import torch
+from google.colab import files
+
+# 1. Upload image and generate caption
+
+img = files.upload()
+image_path = list(img.keys())[0]
+image = Image.open(image_path).convert("RGB")
+
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+caption_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+inputs = processor(image, return_tensors="pt")
+output = caption_model.generate(**inputs)
+caption = processor.decode(output[0], skip_special_tokens=True)
+
+print("\nImage Caption:")
+print(caption)
+
+# 2. Generate image from text prompt
+
+pipe = StableDiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5",torch_dtype=torch.float16).to("cuda")
+
+prompt = "A beautiful snowy mountain"
+
+generated_image = pipe(prompt).images[0]
+generated_image
