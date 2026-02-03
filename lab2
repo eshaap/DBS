@@ -1,0 +1,29 @@
+#2. A news analytics platform wants to compare the meaning of headlines.
+#Write a program that:
+#1. Takes two news headlines as input
+#2. Computes sentence similarity
+#3. Uses spaCy to compute similarity between two keywords(Example: economy and finance)
+
+
+!pip install spacy
+!python -m spacy download en_core_web_md
+
+import spacy
+
+nlp = spacy.load("en_core_web_md")
+
+# 1. Take two news headlines
+h1 = input("Enter headline 1: ")
+h2 = input("Enter headline 2: ")
+
+# 2. Sentence similarity
+doc1 = nlp(h1)
+doc2 = nlp(h2)
+
+print("Sentence similarity:", doc1.similarity(doc2))
+
+# 3. Keyword similarity (example: economy and finance)
+k1 = nlp(input("Word 1: (e.g: economy)"))
+k2 = nlp(input("Word 2: (e.g:finance)"))
+
+print("Keyword similarity:", k1.similarity(k2))
