@@ -1,0 +1,31 @@
+#3. A customer support chatbot must understand misspelled product names. Train a FastText word embedding model on sample product reviews and:
+#i. Find similar words for a misspelled word
+#ii. Show how FastText handles unseen words better than Word2Vec
+
+!pip install gensim 
+
+from gensim.models import FastText, Word2Vec
+
+# Sample product reviews
+data = [
+    "this phone camera is good",
+    "battery of phone is great",
+    "mobile phone has nice display"
+]
+
+sentences = [d.split() for d in data]
+
+# Train models
+ft = FastText(sentences, vector_size=50, min_count=1, epochs=30)
+w2v = Word2Vec(sentences, vector_size=50, min_count=1, epochs=30)
+
+misspelled = "fone"
+
+print("FastText similar words:")
+print(ft.wv.most_similar(misspelled, topn=3))
+
+print("\nWord2Vec similar words:")
+try:
+    print(w2v.wv.most_similar(misspelled, topn=3))
+except KeyError:
+    print("Word2Vec cannot handle misspelled/unseen word")
