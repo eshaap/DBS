@@ -1,0 +1,68 @@
+#11.A college is developing an AI-based content assistant for students and faculty. The system should perform the following tasks:
+#Generate a college announcement
+#Generate a short moral story for students
+#Generate a caption for an image uploaded by the user
+#Generate a summary of a given paragraph
+
+# Install required libraries (run once in Google Colab)
+!pip install transformers torch pillow -q
+
+from transformers import pipeline, BlipProcessor, BlipForConditionalGeneration
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from PIL import Image
+from google.colab import files
+
+# ------------------------------------------------
+# Text generation model (GPT-2)
+# ------------------------------------------------
+generator = pipeline("text-generation", model="gpt2")
+
+# 1. Generate college announcement
+announcement = generator("Write a formal college announcement about upcoming internal examinations:",max_new_tokens=80,temperature=0.8)[0]["generated_text"]
+
+print("------ College Announcement ------\n")
+print(announcement)
+
+# 2. Generate a short moral story for students
+story = generator("Write a short moral story for students about honesty and perseverance:",max_new_tokens=120,temperature=0.9)[0]["generated_text"]
+
+print("\n------ Moral Story ------\n")
+print(story)
+
+# ------------------------------------------------
+# 3. Upload image and generate caption
+# ------------------------------------------------
+uploaded = files.upload()
+image_path = list(uploaded.keys())[0]
+image = Image.open(image_path).convert("RGB")
+
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+caption_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+inputs = processor(image, text="Describe this image:", return_tensors="pt")
+output = caption_model.generate(**inputs)
+caption = processor.decode(output[0], skip_special_tokens=True)
+
+print("\n------ Image Caption ------\n")
+print(caption)
+
+# ------------------------------------------------
+# 4. Summarize a given paragraph
+# ------------------------------------------------
+paragraph = """
+Artificial Intelligence is transforming education by enabling personalized learning,
+automating administrative processes, and improving overall student engagement.
+"""
+
+model_name = "facebook/bart-large-cnn"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+inputs = tokenizer.encode(paragraph,return_tensors="pt",max_length=1024,truncation=True)
+
+summary_ids = model.generate(inputs,max_length=40,min_length=15,do_sample=False)
+
+summary_text = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+
+print("\n------ Paragraph Summary ------\n")
+print(summary_text)
