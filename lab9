@@ -1,0 +1,61 @@
+#9. A startup marketing team wants AI-generated content.
+#1. Generate a promotional text for a new product
+#2. Upload a product image and generate a caption using BLIP
+#3. Summarize a product description paragraph
+
+!pip install transformers torch pillow -q
+
+from transformers import pipeline, BlipProcessor, BlipForConditionalGeneration
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from PIL import Image
+from google.colab import files
+
+# ------------------------------------------------
+# 1. Generate promotional text (GPT-2)
+# ------------------------------------------------
+generator = pipeline("text-generation", model="gpt2")
+
+promo_text = generator("Write a short promotional text for a new smart fitness watch:",max_new_tokens=80,temperature=0.9)[0]["generated_text"]
+
+print("------ Promotional Text ------\n")
+print(promo_text)
+
+# ------------------------------------------------
+# 2. Upload product image and generate caption (BLIP)
+# ------------------------------------------------
+img = files.upload()
+image_path = list(img.keys())[0]
+image = Image.open(image_path).convert("RGB")
+
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+caption_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+inputs = processor(image, return_tensors="pt")
+output = caption_model.generate(**inputs)
+caption = processor.decode(output[0], skip_special_tokens=True)
+
+print("\n------ Image Caption ------\n")
+print(caption)
+
+# ------------------------------------------------
+# 3. Summarize product description (BART)
+# ------------------------------------------------
+description = """
+The smart fitness watch includes advanced health tracking such as heart rate monitoring,
+sleep analysis, step counting, and GPS. It has a long battery life, water resistance,
+and a modern design suitable for daily use and workouts.
+"""
+
+model_name = "facebook/bart-large-cnn"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+inputs = tokenizer.encode(description,return_tensors="pt",max_length=1024,truncation=True)
+
+summary_ids = model.generate(inputs,max_length=40,min_length=15,do_sample=False)
+
+summary_text = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+
+print("\n------ Product Summary ------\n")
+print(summary_text)
+
