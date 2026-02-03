@@ -1,0 +1,29 @@
+#1. A job portal company wants to help users understand skill relationships in the IT domain.
+#Using pre-trained GloVe embeddings, build a program that:
+#1. Takes a technical skill from the user
+#2. Displays the top 5 similar skills with similarity score
+#3. Find the odd one out from the list: Python, Java, C++, HTML, Ruby ###
+
+!pip install gensim
+
+from gensim.downloader import load
+
+# Load pre-trained GloVe model
+model = load("glove-wiki-gigaword-50")
+print("Model loaded successfully!")
+
+# -------- Similar skills --------
+skill = input("\nEnter a technical skill: ").lower()
+
+print("\nTop 5 similar skills:")
+try:
+    for word, score in model.most_similar(skill, topn=5):
+        print(f"{word} --> similarity: {score:.4f}")
+except KeyError:
+    print("Skill not found in vocabulary.")
+
+# -------- Odd one out --------
+skills = ["python", "java", "c++", "html", "ruby"]
+
+print("\nGiven skills:", skills)
+print("Odd one out:", model.doesnt_match(skills))
