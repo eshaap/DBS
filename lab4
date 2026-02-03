@@ -1,0 +1,30 @@
+
+#4 4. An educational quiz platform wants AI-based analogy questions.
+#Using GloVe embeddings, build a program to solve analogies like:
+#“Doctor is to Hospital as Teacher is to ____?”
+#Allow the user to enter custom analogy words
+
+!pip install gensim
+
+from gensim.downloader import load
+
+# Load pretrained GloVe embeddings
+model = load("glove-wiki-gigaword-50")
+print("Model Loaded Successfully!")
+
+def solve_analogy(a, b, c):
+    try:
+        result = model.most_similar(positive=[b, c], negative=[a], topn=1)
+        return result[0]
+    except KeyError:
+        return "One or more words not in vocabulary."
+
+# User input
+a = input("Enter word A (e.g., doctor): ").lower()
+b = input("Enter word B (e.g., hospital): ").lower()
+c = input("Enter word C (e.g., teacher): ").lower()
+
+res = solve_analogy(a, b, c)
+
+print("\nAnalogy Result:")
+print(f"{a} : {b} :: {c} : {res}")
